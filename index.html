@@ -1,10 +1,11 @@
-```html
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu site - Versão 3 — corrigida</title>
+
   <style>
     body {
       margin: 0;
@@ -14,6 +15,7 @@
       font-family: system-ui, "Segoe UI", Roboto, sans-serif;
       background: #000080;
       padding: 1rem;
+      box-sizing: border-box;
     }
 
     .cartao {
@@ -22,6 +24,7 @@
       padding: 2.5rem;
       max-width: 520px;
       width: 100%;
+      box-sizing: border-box;
       box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
       text-align: center;
       color: #000080;
@@ -43,6 +46,7 @@
       background: #f2f2f7;
       text-align: left;
       line-height: 1.8;
+      overflow-wrap: anywhere;
     }
 
     code {
@@ -51,16 +55,46 @@
       border-radius: 6px;
     }
 
-    /* Botão de e-mail */
+    .campo {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .campo label {
+      display: block;
+      margin-bottom: .4rem;
+      font-weight: 600;
+      color: #000080;
+    }
+
+    .campo input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 1px solid #c7c7cc;
+      border-radius: 8px;
+      font: inherit;
+      color: #222;
+      background: #fff;
+    }
+
+    .campo input:focus {
+      outline: 2px solid #1e9e5a;
+      border-color: #1e9e5a;
+    }
+
     .botao-email {
       display: inline-block;
       margin-top: 1.5rem;
       padding: 12px 24px;
+      border: none;
       border-radius: 10px;
       background: #1e9e5a;
       color: #fff;
       text-decoration: none;
       font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
       transition: .2s;
     }
 
@@ -76,6 +110,12 @@
       color: #6e6e73;
       font-size: .85rem;
     }
+
+    @media (max-width: 480px) {
+      .cartao {
+        padding: 1.5rem;
+      }
+    }
   </style>
 </head>
 
@@ -86,24 +126,53 @@
 
     <h1>Versão 3 — corrigida</h1>
 
-    <p><b> problema foi resolvido</b></p>
+    <p><b>O problema foi resolvido!</b></p>
 
-    <div class="versao">
-      🤖 <form>
-        Publicado pelo <label for="fname">First name:</label> <br>
-        <input type="text" id="fname" name="fname"> em:
-      </form> 
-      __DATA__<br>
-      🔖 <strong>Commit:</strong> <code>__COMMIT__</code><br>
-      👤 <strong>Enviado por:</strong> __AUTOR__
+    <!-- Campos preenchidos pelo usuário -->
+    <div class="campo">
+      <label for="nome">Seu nome:</label>
+      <input
+        type="text"
+        id="nome"
+        name="nome"
+        placeholder="Digite seu nome completo"
+        autocomplete="name"
+        required
+      >
     </div>
 
-    <!-- Botão para enviar e-mail -->
+    <div class="campo">
+      <label for="data">Data da publicação:</label>
+      <input
+        type="date"
+        id="data"
+        name="data"
+        required
+      >
+    </div>
+
+    <!-- Informações da publicação -->
+    <div class="versao">
+      🤖 <strong>Publicado por:</strong>
+      <span id="nomeExibido">Seu nome aparecerá aqui</span><br>
+
+      📅 <strong>Data:</strong>
+      <span id="dataExibida">Selecione uma data</span><br>
+
+      🔖 <strong>Commit:</strong>
+      <code>__COMMIT__</code><br>
+
+      👤 <strong>Enviado por:</strong>
+      __AUTOR__
+    </div>
+
+    <!-- Botão de envio do e-mail -->
     <a
       class="botao-email"
-      href="mailto:seuemail@exemplo.com?subject=Versão%203%20-%20Site%20corrigido&body=Olá,%0D%0A%0D%0AO%20site%20foi%20publicado%20com%20sucesso.%0D%0A%0D%0AData:%20__DATA__%0D%0ACommit:%20__COMMIT__%0D%0AAutor:%20__AUTOR__"
+      id="botaoEmail"
+      href="#"
     >
-      📧 Enviar e-mail.
+      📧 Enviar e-mail
     </a>
 
     <footer>
@@ -112,6 +181,84 @@
     </footer>
 
   </main>
+
+  <script>
+    const campoNome = document.getElementById("nome");
+    const campoData = document.getElementById("data");
+    const nomeExibido = document.getElementById("nomeExibido");
+    const dataExibida = document.getElementById("dataExibida");
+    const botaoEmail = document.getElementById("botaoEmail");
+
+    // Preenche a data inicial com a data atual, no horário local.
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    campoData.value = `${ano}-${mes}-${dia}`;
+
+    function formatarData(data) {
+      if (!data) return "";
+
+      const [ano, mes, dia] = data.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function atualizarInformacoes() {
+      const nome = campoNome.value.trim();
+      const data = campoData.value;
+
+      nomeExibido.textContent = nome || "Seu nome aparecerá aqui";
+      dataExibida.textContent = data
+        ? formatarData(data)
+        : "Selecione uma data";
+    }
+
+    campoNome.addEventListener("input", atualizarInformacoes);
+    campoData.addEventListener("change", atualizarInformacoes);
+
+    botaoEmail.addEventListener("click", function(event) {
+      event.preventDefault();
+
+      const nome = campoNome.value.trim();
+      const data = campoData.value;
+
+      if (!nome) {
+        alert("Por favor, digite seu nome antes de enviar o e-mail.");
+        campoNome.focus();
+        return;
+      }
+
+      if (!data) {
+        alert("Por favor, selecione a data da publicação.");
+        campoData.focus();
+        return;
+      }
+
+      const dataFormatada = formatarData(data);
+
+      const assunto = "Versão 3 - Site corrigido";
+
+      const corpo =
+        "Olá,\n\n" +
+        "O site foi publicado com sucesso.\n\n" +
+        "Data: " + dataFormatada + "\n" +
+        "Commit: __COMMIT__\n" +
+        "Autor: __AUTOR__\n" +
+        "Publicado por: " + nome;
+
+      const destinatario = "seuemail@exemplo.com";
+
+      const linkEmail =
+        "mailto:" + destinatario +
+        "?subject=" + encodeURIComponent(assunto) +
+        "&body=" + encodeURIComponent(corpo);
+
+      window.location.href = linkEmail;
+    });
+
+    atualizarInformacoes();
+  </script>
+
 </body>
-</html>
-```
+000000000000000000000000000000000000000
